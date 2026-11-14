@@ -23,21 +23,26 @@ header p{margin:6px 0 0;opacity:.85}
 button{font:700 16px 'Barlow Condensed',system-ui;border:0;border-radius:6px;padding:9px 14px;background:var(--gold);color:#1a1200}
 button.g{background:#0007;color:var(--cream);border:1px solid var(--line)}
 button.r{background:var(--red);color:#fff}
-.wrap{overflow:auto;padding:6px 16px 24px;-webkit-overflow-scrolling:touch}
-.cols{position:relative;display:flex;gap:64px;min-width:max-content;align-items:stretch}
-.cols svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
-.col{width:230px;display:flex;flex-direction:column;position:relative;z-index:1}
-.col h3{margin:0 0 12px;font:400 14px Bungee,sans-serif;color:#c9d6e8;text-align:center;padding:6px 0;background:var(--felt2);position:sticky;top:0;z-index:2}
-.ms{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:16px}
+.wrap{overflow:auto;height:calc(100dvh - 294px);min-height:340px;padding:0 16px 24px;-webkit-overflow-scrolling:touch;border-top:1px solid #ffffff14}
+.admin .wrap{height:calc(100dvh - 346px)}
+.tools{display:flex;align-items:center;gap:8px;margin:0 16px 8px}
+.tools span{min-width:52px;text-align:center;font-weight:700}
+.tools button{min-width:44px}
+.cols{position:relative;display:flex;gap:calc(64px*var(--z,1));min-width:max-content;align-items:stretch}
+.cols>svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.col{width:calc(230px*var(--z,1));display:flex;flex-direction:column;position:relative;z-index:1}
+.col h3{margin:0 0 calc(12px*var(--z,1));font:400 calc(14px*var(--z,1)) Bungee,sans-serif;color:#c9d6e8;text-align:center;padding:6px 0;background:var(--felt2);position:sticky;top:0;z-index:2}
+.ms{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:calc(16px*var(--z,1))}
 .mt{background:var(--card);border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.pl{display:flex;align-items:center;gap:8px;padding:0 12px;min-height:46px;border-top:1px solid #ffffff14;font-size:18px}
+.pl{display:flex;align-items:center;gap:calc(8px*var(--z,1));padding:0 calc(12px*var(--z,1));min-height:calc(46px*var(--z,1));border-top:1px solid #ffffff14;font-size:calc(18px*var(--z,1))}
 .pl:first-child{border-top:0}
 .pl .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl .n.em{font-style:italic;opacity:.55}
-.pl b{font-size:14px;font-style:italic;opacity:.6}
+.pl b{font-size:calc(14px*var(--z,1));font-style:italic;opacity:.6}
 .pl.win{background:#f5c54230;color:var(--gold);font-weight:700}
 .pl.lose{opacity:.45;text-decoration:line-through}
-.pl .ed{background:var(--gold);color:#000;padding:4px 9px;font-size:15px;border-radius:5px}
+.pl .ed{display:grid;place-items:center;width:calc(34px*var(--z,1));height:calc(28px*var(--z,1));padding:0;background:var(--gold);color:#000;border-radius:5px;flex:none}
+.pl .ed svg{width:55%;height:55%}
 .admin .pl[data-m]{cursor:pointer;outline:1px dashed #f5c54266;outline-offset:-3px}
 .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;padding:6px 16px}
 .pr{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
@@ -96,6 +101,7 @@ textarea{height:70px}
 const $ = s => document.querySelector(s);
 const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let S = { names: Array(32).fill(''), results: {} };
+let Z = innerWidth < 600 ? 0.85 : 1;
 let admin = false, pin = sessionStorage.getItem('pin') || '', busy = false, shuffled = false;
 const nm = i => (S.names[i] || '').trim() || 'L' + (i + 1);
 
@@ -138,14 +144,14 @@ function card(m, R) {
     const cls = p == null ? '' : x.win === p ? 'win' : x.lose === p ? 'lose' : '';
     const name = p == null ? `<span class="n em">${ref[0] === 'l' ? 'kalah ' + ref[1] : 'menunggu'}</span>`
       : S.names[p]?.trim() ? `<span class="n">${esc(S.names[p].trim())}</span>` : `<span class="n em">${admin && m.id.startsWith('W1-') ? 'isi nama →' : 'menunggu'}</span>`;
-    const pen = admin && p != null && m.id.startsWith('W1-') ? `<button class="ed" data-ed="${p}" title="Isi nama L${p + 1}">✎</button>` : '';
+    const pen = admin && p != null && m.id.startsWith('W1-') ? `<button class="ed" data-ed="${p}" title="Isi nama L${p + 1}"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25zM20.7 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>` : '';
     return `<div class="pl ${cls}" ${can ? `data-m="${m.id}" data-p="${p}"` : ''}>${name}${pen}${p == null ? '' : `<b>L${p + 1}</b>`}</div>`;
   };
   return `<div class="mt" id="m-${m.id}">${row(x.A, m.a)}${row(x.B, m.b)}</div>`;
 }
 
 function bracket(prefix, titles, R) {
-  let h = '<div class="wrap"><div class="cols" id="cols">';
+  let h = `<div class="tools"><button class="g" data-z="-">−</button><span>${Math.round(Z * 100)}%</span><button class="g" data-z="+">+</button><button class="g" data-z="fit">Pas layar</button></div>` + '<div class="wrap"><div class="cols" id="cols">';
   titles.forEach((t, i) => {
     h += `<div class="col"><h3>${t}</h3><div class="ms">` + MATCHES.filter(m => m.id.startsWith(prefix + (i + 1) + '-')).map(m => card(m, R)).join('') + '</div></div>';
   });
@@ -172,6 +178,7 @@ const BALL = ['#e8c20c','#1d4fd0','#d93030','#5b2d90','#f07a1e','#1b8a3e','#7a1f
 
 function render() {
   const R = compute();
+  const w0 = $('.wrap'), sl = w0 ? w0.scrollLeft : 0, st = w0 ? w0.scrollTop : 0;
   document.body.classList.toggle('admin', admin);
   $('#lock').textContent = admin ? '🔓 Admin aktif' : '🔒 Masuk admin';
   $('#lock').classList.toggle('on', admin);
@@ -196,6 +203,7 @@ function render() {
         (gf.win != null ? `<div class="trophy">🏆 ${esc(nm(gf.win))}</div><p>Juara 1 Rainbow 9 Ball Season 2</p>` : '<p>Juara akan muncul setelah Grand Final selesai.</p>') + '</div>';
   }
   $('#view').innerHTML = h;
+  const w1 = $('.wrap'); if (w1) { w1.scrollLeft = sl; w1.scrollTop = st; }
   lines();
 }
 
@@ -271,13 +279,31 @@ $('#saveN').onclick = () => {
 $('#close').onclick = () => $('#dlg').close();
 $('#resetRes').onclick = () => { if (confirm('Hapus semua hasil pertandingan?')) { S.results = {}; render(); save(); } };
 
-window.addEventListener('hashchange', render);
-window.addEventListener('resize', () => { document.querySelector('#cols svg')?.remove(); lines(); });
+function applyZ() {
+  document.documentElement.style.setProperty('--z', Z);
+  const t = document.querySelector('.tools span'); if (t) t.textContent = Math.round(Z * 100) + '%';
+  document.querySelector('#cols > svg')?.remove(); lines();
+}
+$('#view').addEventListener('click', e => {
+  const b = e.target.closest('[data-z]'); if (!b) return;
+  const k = b.dataset.z, r2 = v => Math.round(v * 100) / 100;
+  if (k === '+') Z = Math.min(1.4, r2(Z + 0.1));
+  else if (k === '-') Z = Math.max(0.3, r2(Z - 0.1));
+  else {
+    const w = $('.wrap'), c = $('#cols'), h1 = c.offsetHeight / Z, w1 = c.offsetWidth / Z;
+    Z = Math.max(0.3, r2(Math.min(1, (w.clientHeight - 20) / h1, (w.clientWidth - 32) / w1)));
+    w.scrollLeft = 0; w.scrollTop = 0;
+  }
+  applyZ();
+});
+window.addEventListener('hashchange', () => { const w = $('.wrap'); if (w) { w.scrollLeft = 0; w.scrollTop = 0; } render(); });
+window.addEventListener('resize', () => { document.querySelector('#cols > svg')?.remove(); lines(); });
 document.fonts && document.fonts.ready.then(lines);
 (async () => {
+  document.documentElement.style.setProperty('--z', Z);
   admin = !!pin;
   await load(); render();
-  setInterval(async () => { if (busy || $('#dlg').open) return; await load(); render(); }, 8000);
+  setInterval(async () => { if (busy || $('#dlg').open) return; const b4 = JSON.stringify(S); await load(); if (JSON.stringify(S) !== b4) render(); }, 8000);
 })();
 </script>
 </body>
