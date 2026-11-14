@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin • Rainbow 9 Ball Season 2</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07271e">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--felt:#13243a;--felt2:#0a1522;--gold:#f5c542;--cream:#f4ecd8;--red:#e0483e;--card:#17263a;--line:#3a5a82}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% -10%,var(--felt),var(--felt2) 70%) fixed;color:var(--cream);font:500 17px 'Barlow Condensed',system-ui,sans-serif;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{padding:calc(18px + env(safe-area-inset-top)) 16px 10px;text-align:center;position:relative}
+h1{font:400 clamp(26px,7vw,46px)/1 Bungee,Impact,sans-serif;margin:0;color:var(--gold);text-shadow:0 3px 0 #000a}
+header p{margin:6px 0 0;opacity:.85}
+#lock{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top));background:#0007;border:1px solid var(--gold);color:var(--gold);border-radius:999px;padding:6px 12px;font:inherit}
+#lock.on{background:var(--gold);color:#000}
+.stat{margin:10px 16px;padding:10px 14px;border:2px solid var(--gold);border-radius:6px;background:#000a;display:flex;justify-content:space-between;gap:10px;font-weight:700}
+.stat span:last-child{color:var(--gold)}
+.bar{display:none;gap:8px;margin:0 16px 10px;flex-wrap:wrap}
+.admin .bar{display:flex}
+button{font:700 16px 'Barlow Condensed',system-ui;border:0;border-radius:6px;padding:9px 14px;background:var(--gold);color:#1a1200}
+button.g{background:#0007;color:var(--cream);border:1px solid var(--line)}
+button.r{background:var(--red);color:#fff}
+.wrap{overflow:auto;padding:6px 16px 24px;-webkit-overflow-scrolling:touch}
+.cols{position:relative;display:flex;gap:64px;min-width:max-content;align-items:stretch}
+.cols svg{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.col{width:230px;display:flex;flex-direction:column;position:relative;z-index:1}
+.col h3{margin:0 0 12px;font:400 14px Bungee,sans-serif;color:#c9d6e8;text-align:center;padding:6px 0;background:var(--felt2);position:sticky;top:0;z-index:2}
+.ms{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:16px}
+.mt{background:var(--card);border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.pl{display:flex;align-items:center;gap:8px;padding:0 12px;min-height:46px;border-top:1px solid #ffffff14;font-size:18px}
+.pl:first-child{border-top:0}
+.pl .n{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl .n.em{font-style:italic;opacity:.55}
+.pl b{font-size:14px;font-style:italic;opacity:.6}
+.pl.win{background:#f5c54230;color:var(--gold);font-weight:700}
+.pl.lose{opacity:.45;text-decoration:line-through}
+.admin .pl[data-m]{cursor:pointer;outline:1px dashed #f5c54266;outline-offset:-3px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;padding:6px 16px}
+.pr{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.ball{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 14px system-ui;color:#fff;flex:none;box-shadow:inset -3px -3px 5px #0006}
+.pr em{margin-left:auto;font-style:normal;font-size:13px;padding:2px 8px;border-radius:99px;background:#0006}
+.pr em.g{color:#7dffb0}.pr em.b{color:#ff8d86}.pr em.y{background:var(--gold);color:#000}
+.champ{text-align:center;padding:20px 16px}
+.champ .mt{max-width:260px;margin:12px auto}
+.trophy{font:400 clamp(24px,8vw,40px) Bungee,sans-serif;color:var(--gold);margin:14px 0}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#081220;border-top:2px solid var(--gold);padding-bottom:env(safe-area-inset-bottom)}
+nav a{flex:1;text-align:center;padding:12px 0;color:var(--cream);opacity:.6;font-weight:700}
+nav a.on{opacity:1;color:var(--gold)}
+dialog{background:#0f1c2e;color:var(--cream);border:2px solid var(--gold);border-radius:10px;width:min(560px,94vw);max-height:90vh;padding:14px}
+dialog::backdrop{background:#000b}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+.grid label{display:flex;align-items:center;gap:6px;font-size:14px}
+.grid input,textarea{width:100%;font:500 16px system-ui;padding:7px;border-radius:5px;border:1px solid var(--line);background:#0a1522;color:var(--cream)}
+textarea{height:70px}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--gold);color:#000;padding:8px 16px;border-radius:99px;font-weight:700;opacity:0;transition:.25s;pointer-events:none}
+#toast.show{opacity:1}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <button id="lock">🔒 Admin</button>
+  <h1>Admin Rainbow</h1>
+  <p>Panel admin · <a href="index.html" style="color:var(--gold)">lihat halaman publik</a></p>
+</header>
+<div class="stat"><span id="st">Menunggu pertandingan pertama</span><span id="cnt">0 / 62</span></div>
+<div class="bar">
+  <button id="edNames">Isi nama L1–L32</button>
+  <button class="g" id="resetRes">Reset hasil</button>
+</div>
+<main id="view"></main>
+<nav id="nav">
+  <a href="#win">Win Bracket</a><a href="#lose">Lose Bracket</a><a href="#peserta">Peserta</a><a href="#juara">Juara</a>
+</nav>
+
+<dialog id="dlg">
+  <b>Nama peserta (L1–L32)</b>
+  <textarea id="paste" placeholder="Tempel daftar nama di sini, satu nama per baris, lalu tekan Isi dari daftar"></textarea>
+  <button class="g" id="fill">Isi dari daftar</button>
+  <div class="grid" id="grid"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button id="saveN">Simpan nama</button>
+    <button class="g" id="shuf">Acak posisi</button>
+    <button class="g" id="close">Tutup</button>
+  </div>
+</dialog>
+<div id="toast"></div>
+
+<script src="config.js"></script>
+<script>
+
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let S = { names: Array(32).fill(''), results: {} };
+let admin = false, pin = sessionStorage.getItem('pin') || '', busy = false, shuffled = false;
+const nm = i => (S.names[i] || '').trim() || 'L' + (i + 1);
+
+// ---- Susunan 62 pertandingan ----
+const MATCHES = (() => {
+  const M = [], W = id => ['w', id], L = id => ['l', id], add = (id, a, b) => M.push({ id, a, b });
+  for (let k = 1; k <= 16; k++) add(`W1-${k}`, ['p', 2*k-2], ['p', 2*k-1]);
+  [[2,8],[3,4],[4,2],[5,1]].forEach(([r,n]) => { for (let k = 1; k <= n; k++) add(`W${r}-${k}`, W(`W${r-1}-${2*k-1}`), W(`W${r-1}-${2*k}`)); });
+  for (let k = 1; k <= 8; k++) add(`L1-${k}`, L(`W1-${2*k-1}`), L(`W1-${2*k}`));
+  for (let k = 1; k <= 8; k++) add(`L2-${k}`, W(`L1-${k}`), L(`W2-${9-k}`));
+  for (let k = 1; k <= 4; k++) add(`L3-${k}`, W(`L2-${2*k-1}`), W(`L2-${2*k}`));
+  for (let k = 1; k <= 4; k++) add(`L4-${k}`, W(`L3-${k}`), L(`W3-${5-k}`));
+  for (let k = 1; k <= 2; k++) add(`L5-${k}`, W(`L4-${2*k-1}`), W(`L4-${2*k}`));
+  for (let k = 1; k <= 2; k++) add(`L6-${k}`, W(`L5-${k}`), L(`W4-${3-k}`));
+  add('L7-1', W('L6-1'), W('L6-2'));
+  add('L8-1', W('L7-1'), L('W5-1'));
+  add('GF', W('W5-1'), W('L8-1'));
+  return M;
+})();
+
+// ---- Hitung bagan dari hasil ----
+function compute() {
+  const R = {}, clean = {};
+  const get = ref => ref[0] === 'p' ? ref[1] : (R[ref[1]] ? (ref[0] === 'w' ? R[ref[1]].win : R[ref[1]].lose) : null);
+  MATCHES.forEach(m => {
+    const A = get(m.a), B = get(m.b), r = S.results[m.id];
+    let win = null, lose = null;
+    if (A != null && B != null && (r === A || r === B)) { win = r; lose = r === A ? B : A; clean[m.id] = r; }
+    R[m.id] = { ...m, A, B, win, lose };
+  });
+  S.results = clean;
+  return R;
+}
+const refLabel = r => (r[0] === 'w' ? 'Menang ' : 'Kalah ') + r[1];
+
+function card(m, R) {
+  const x = R[m.id];
+  const row = (p, ref) => {
+    const can = admin && x.A != null && x.B != null && p != null;
+    const cls = p == null ? '' : x.win === p ? 'win' : x.lose === p ? 'lose' : '';
+    const name = p == null ? `<span class="n em">${ref[0] === 'l' ? 'kalah ' + ref[1] : 'menunggu'}</span>`
+      : S.names[p]?.trim() ? `<span class="n">${esc(S.names[p].trim())}</span>` : `<span class="n em">menunggu</span>`;
+    return `<div class="pl ${cls}" ${can ? `data-m="${m.id}" data-p="${p}"` : ''}>${name}${p == null ? '' : `<b>L${p + 1}</b>`}</div>`;
+  };
+  return `<div class="mt" id="m-${m.id}">${row(x.A, m.a)}${row(x.B, m.b)}</div>`;
+}
+
+function bracket(prefix, titles, R) {
+  let h = '<div class="wrap"><div class="cols" id="cols">';
+  titles.forEach((t, i) => {
+    h += `<div class="col"><h3>${t}</h3><div class="ms">` + MATCHES.filter(m => m.id.startsWith(prefix + (i + 1) + '-')).map(m => card(m, R)).join('') + '</div></div>';
+  });
+  return h + '</div></div>';
+}
+
+function lines() {
+  const c = $('#cols'); if (!c) return;
+  const cr = c.getBoundingClientRect(); let p = '';
+  MATCHES.forEach(m => {
+    const to = document.getElementById('m-' + m.id); if (!to || !c.contains(to)) return;
+    const tr = to.getBoundingClientRect(), ty = tr.top + tr.height / 2 - cr.top, tx = tr.left - cr.left;
+    [m.a, m.b].forEach(r => {
+      if (r[0] !== 'w') return;
+      const f = document.getElementById('m-' + r[1]); if (!f || !c.contains(f)) return;
+      const fr = f.getBoundingClientRect(), fx = fr.right - cr.left, fy = fr.top + fr.height / 2 - cr.top;
+      p += `M${fx} ${fy}H${(fx + tx) / 2}V${ty}H${tx}`;
+    });
+  });
+  c.insertAdjacentHTML('beforeend', `<svg><path d="${p}" fill="none" stroke="#3a5a82" stroke-width="2"/></svg>`);
+}
+
+const BALL = ['#e8c20c','#1d4fd0','#d93030','#5b2d90','#f07a1e','#1b8a3e','#7a1f1f','#151515','#e8c20c'];
+
+function render() {
+  const R = compute();
+  document.body.classList.toggle('admin', admin);
+  $('#lock').textContent = admin ? '🔓 Admin aktif' : '🔒 Masuk admin';
+  $('#lock').classList.toggle('on', admin);
+  const done = Object.keys(S.results).length;
+  $('#cnt').textContent = done + ' / 62';
+  const gf = R.GF;
+  $('#st').textContent = gf.win != null ? 'Turnamen selesai' : done === 0 ? 'Menunggu pertandingan pertama' : 'Turnamen berjalan';
+  const tab = (location.hash || '#win').slice(1);
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('on', a.hash === '#' + tab));
+  let h = '';
+  if (tab === 'win') h = bracket('W', ['Babak 32 Besar', '16 Besar', 'Perempat Final', 'Semi Final', 'Final Win Bracket'], R);
+  else if (tab === 'lose') h = bracket('L', ['Lose Babak 1', 'Lose Babak 2', 'Lose Babak 3', 'Lose Babak 4', 'Lose Babak 5', 'Lose Babak 6', 'Lose Babak 7', 'Final Lose Bracket'], R);
+  else if (tab === 'peserta') {
+    const loss = Array(32).fill(0);
+    Object.values(R).forEach(m => { if (m.lose != null) loss[m.lose]++; });
+    h = '<div class="list">' + S.names.map((_, i) => {
+      const champ = gf.win === i, st = champ ? ['Juara', 'y'] : loss[i] >= 2 ? ['Gugur', 'b'] : loss[i] === 1 ? ['Lose Bracket', ''] : ['Win Bracket', 'g'];
+      return `<div class="pr"><span class="ball" style="background:${BALL[i % 9]}">${(i % 9) + 1}</span><span><b>L${i + 1}</b> ${esc(nm(i))}</span><em class="${st[1]}">${st[0]}</em></div>`;
+    }).join('') + '</div>';
+  } else {
+    h = `<div class="champ"><h3 style="font-family:Bungee">Grand Final · Race 5</h3>${card(MATCHES[MATCHES.length - 1], R)}` +
+        (gf.win != null ? `<div class="trophy">🏆 ${esc(nm(gf.win))}</div><p>Juara 1 Rainbow 9 Ball Season 2</p>` : '<p>Juara akan muncul setelah Grand Final selesai.</p>') + '</div>';
+  }
+  $('#view').innerHTML = h;
+  lines();
+}
+
+// ---- Simpan & muat ----
+const H = { apikey: CFG.KEY, Authorization: 'Bearer ' + CFG.KEY, 'Content-Type': 'application/json' };
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2000); }
+
+async function load() {
+  try {
+    if (!CFG.URL) { const t = localStorage.getItem('rb2026'); if (t) S = JSON.parse(t); return; }
+    const r = await fetch(`${CFG.URL}/rest/v1/tournament?id=eq.1&select=data`, { headers: H });
+    const d = (await r.json())[0]?.data;
+    if (d && d.names) S = d;
+  } catch (e) { console.warn(e); }
+}
+
+async function save() {
+  busy = true;
+  try {
+    if (!CFG.URL) localStorage.setItem('rb2026', JSON.stringify(S));
+    else {
+      const r = await fetch(`${CFG.URL}/rest/v1/rpc/save_state`, { method: 'POST', headers: H, body: JSON.stringify({ p_pin: pin, p_data: S }) });
+      if (!r.ok) throw new Error('PIN salah atau gagal menyimpan');
+    }
+    toast('Tersimpan ✓');
+  } catch (e) {
+    toast(e.message); admin = false; sessionStorage.removeItem('pin'); await load();
+  } finally { busy = false; render(); }
+}
+
+// ---- Aksi ----
+$('#lock').onclick = async () => {
+  if (admin) { admin = false; sessionStorage.removeItem('pin'); return render(); }
+  const p = prompt('Masukkan PIN admin'); if (!p) return;
+  pin = p; sessionStorage.setItem('pin', p); admin = true;
+  await load(); await save();
+};
+
+$('#view').onclick = e => {
+  const el = e.target.closest('[data-m]'); if (!admin || !el) return;
+  const id = el.dataset.m, p = +el.dataset.p;
+  if (S.results[id] === p) delete S.results[id]; else S.results[id] = p;
+  render(); save();
+};
+
+$('#edNames').onclick = () => {
+  $('#grid').innerHTML = S.names.map((n, i) => `<label>L${i + 1}<input maxlength="30" value="${esc(n)}"></label>`).join('');
+  shuffled = false; $('#dlg').showModal();
+};
+const inputs = () => [...document.querySelectorAll('#grid input')];
+$('#fill').onclick = () => {
+  const lines = $('#paste').value.split('\n').map(s => s.trim()).filter(Boolean);
+  inputs().forEach((el, i) => el.value = lines[i] || '');
+};
+$('#shuf').onclick = () => {
+  const a = inputs().map(el => el.value);
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  inputs().forEach((el, i) => el.value = a[i]); shuffled = true;
+};
+$('#saveN').onclick = () => {
+  S.names = inputs().map(el => el.value.trim());
+  if (shuffled) S.results = {};
+  $('#dlg').close(); render(); save();
+};
+$('#close').onclick = () => $('#dlg').close();
+$('#resetRes').onclick = () => { if (confirm('Hapus semua hasil pertandingan?')) { S.results = {}; render(); save(); } };
+
+window.addEventListener('hashchange', render);
+window.addEventListener('resize', () => { document.querySelector('#cols svg')?.remove(); lines(); });
+document.fonts && document.fonts.ready.then(lines);
+(async () => {
+  admin = !!pin;
+  await load(); render();
+  setInterval(async () => { if (busy || $('#dlg').open) return; await load(); render(); }, 8000);
+})();
+</script>
+</body>
+</html>
